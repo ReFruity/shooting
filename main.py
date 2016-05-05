@@ -32,11 +32,11 @@ def main():
     h = 0.1
     f1 = lambda x, y, z: z
     f2 = lambda x, y, z: y + 3 + 1.5*x*x*(x-1)
-    g = lambda mu: f(output_handle, mu, f1, f2, a, b, h)
+    f = lambda mu: f_wrapper(output_handle, mu, f1, f2, a, b, h)
 
     bisect_a = -100
     bisect_b = 100
-    mu_res = bisect_method(g, bisect_a, bisect_b)
+    mu_res = bisect_method(f, bisect_a, bisect_b)
 
     y_func, _ = cauchy_method(f1, f2, a, b, h, 3, mu_res)
 
@@ -45,17 +45,18 @@ def main():
     # print_solution(output_handle, a, b, h)
 
 
-def f(output_handle, mu, f1, f2, a, b, h):
+def f_wrapper(output_handle, mu, f1, f2, a, b, h):
     y_func, z_func = cauchy_method(f1, f2, a, b, h, 3, mu)
 
-    print_value(output_handle, y_func)
-    print_value(output_handle, z_func)
+    # Debug
+    # print_value(output_handle, y_func)
+    # print_value(output_handle, z_func)
 
     # y'(b) + y(b) - ...
     result = z_func.get_last_y() + y_func.get_last_y() - 2 * exp(5) + 301.5
 
-    print_value(output_handle, result)
-    print_value(output_handle, '')
+    # print_value(output_handle, result)
+    # print_value(output_handle, '')
 
     return result
 
@@ -150,8 +151,7 @@ def test():
     b = 5
     h = 0.1
     y_func, z_func = cauchy_method(f1, f2, a, b, h, 3, 0)
-    assert len(y_func.points) == (b - a)/h + 1
-    assert len(z_func.points) == (b - a)/h + 1
+    assert len(y_func.points) == len(z_func.points) == (b - a)/h + 1
 
     actual = bisect_method(lambda x: x, -1, 1)
     assert close(actual, 0)
